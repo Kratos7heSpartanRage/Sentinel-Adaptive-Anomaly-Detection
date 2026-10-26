@@ -16,7 +16,7 @@ half-day including verification; no calendar deadline or skill level is assumed.
 | KS-03 | P0 / 2 | Implement deterministic group/chronological split manifest tooling and boundary-purge validation; hashes and group constraints | Synthetic manifest for tests; use real inventory later | IN_REVIEW |
 | KS-04 | P0 / 2 | Adapt organizer starter files/labels to canonical input, with documented timezone/gap/column mapping and access provenance | Official assets and Q01/Q09 answers | BLOCKED |
 | KS-05 | P1 / 2 | Real dataset EDA and train-only periodicity/cadence analysis; provide figures/notes for slides 3/5 and EXP-01 | KS-04, permitted development labels | BLOCKED |
-| KS-06 | P1 / 2 | Stress feature/data behavior on missing spans, rescaling, contaminated warmup, flat/short series; report limitations | KS-02/03 | IN_PROGRESS |
+| KS-06 | P1 / 2 | Stress feature/data behavior on missing spans, rescaling, contaminated warmup, flat/short series; report limitations | KS-02/03 | IN_REVIEW |
 
 **First three tasks:** KS-01, KS-02, KS-03. KS-01 starts on synthetic inputs with explicit labels
 and cannot claim a real NAB inventory. KS-02/03 can be developed with fixed mock manifests;
@@ -141,3 +141,39 @@ coordinate with Manas and document horizon/memory effects before adoption.
 - Exact evidence, schema obligations and continuation are in the
   [KS-03 handoff](../docs/HANDOFFS/KS-03_kaustubh_20261026T160340Z_splits.md).
 - Next phase: KS-06 stress/integration and limitations report. KS-04/05 remain externally blocked.
+
+### Current continuation status: all unblocked software phases reviewed
+
+Date: 2026-10-26 (Asia/Kolkata). Earlier phase entries above are historical snapshots; this is
+the latest continuation state. Active branch: `feat/kaustubh/KS-01-02-03-06-data-workstream`.
+
+- KS-01/02/03/06 are implemented and verified, IN_REVIEW pending the named owners' review and
+  integration. No peer approval, main merge, official benchmark or official-data audit is claimed.
+- KS-06 implementation commit: `04b91e86be5c5fca377c1f3049c96969c9b81318`. Added
+  `tests/data/test_stress.py` (22 cases) and [actual stress report](../docs/DATA_STRESS.md).
+  No further production fix was necessary in this phase.
+- Independent review after each phase completed. KS-02's two findings were fixed/rechecked;
+  KS-03 and KS-06 have no findings. Final reviewer independently checked 167 passing owned data
+  tests/1 skipped and a separate 112-target median/MAD oracle across both context policies.
+  Agent review is not Ayush/Manas/Mayank approval.
+- Final full pytest: **191 passed, 1 skipped** (192 collected; includes 24 foundation tests).
+  Ruff lint/format pass (21 files), strict mypy passes (15 source files), pip check passes,
+  repository checker and Git whitespace checks pass. Windows/Python 3.12.14 executed; the single
+  symlink test requires unavailable Windows privilege. Linux/Python 3.11/3.13 remain unexecuted.
+- Fresh CLI replay/evaluate passed in `outputs/kaustubh-data-final-smoke-001`: 16 synthetic points,
+  8 ready/1 anomalous, provisional TP=1/FP=0/FN=0. Committed inventory/split source validation and
+  CLI hash/count parity pass. These prove wiring only; no official score/runtime result exists.
+- Known limits: fixed floors have units; contaminated warmup can define the reference; sample
+  lag is not time-based seasonality after gaps; disjoint feature supports do not validate persistent
+  detector state. All are documented and tested. Existing shared contracts and other-owner paths
+  remain untouched; feature settings/new data schemas require normal consumer review.
+- KS-04/05 remain BLOCKED. User confirmed intake path
+  `C:\Users\HP\Desktop\EngimaxIota hackathon\data\official\` currently contains only README;
+  no authorized download/Q01/Q09 answer exists. This path is absent on this host; local official/
+  also contains only README. Need actual pack, permissions, prescribed splits and raw timestamp/
+  cadence/missingness mapping; then KS-04 sample parity and KS-05 train-only EDA can proceed.
+- All commits are **local only**, not pushed. Another machine cannot retrieve this work yet.
+  [Final handoff](../docs/HANDOFFS/KS-06_kaustubh_20261026T161521Z_final-workstream.md) records
+  exact commands/commits/restart steps; [prepared PR](../docs/data/KAUSTUBH_PR_SUMMARY.md) is ready
+  for publication when authorized under ADR-09. Ayush updates central integration records after
+  human review/merge. Next engineering task is KS-04 when its external inputs actually arrive.

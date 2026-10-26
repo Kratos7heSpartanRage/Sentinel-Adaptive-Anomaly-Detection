@@ -64,20 +64,20 @@ lookback, past_context), deterministic write/validate functions and split_digest
 Files: create tests/data/test_stress.py and docs/DATA_STRESS.md; create a unique KS-06 handoff
 and update personal tasks. Add production fixes only for reproduced bugs in owned data modules.
 
-- [ ] Stress flat/short streams, missing spans, contaminated warmup, positive/negative rescaling,
+- [x] Stress flat/short streams, missing spans, contaminated warmup, positive/negative rescaling,
   timestamp offsets, extreme finite values/overflow, long bounded streams, interleaved independent
   series and frozen split/feature context boundaries. Tests name observable failures, not mocks.
-- [ ] Establish expected invariants independently: positive affine transforms preserve median
+- [x] Establish expected invariants independently: positive affine transforms preserve median
   relationships when scale floor is inactive; contaminating future values cannot change prefix
   frames; missing spans are not imputed; lag is measured in observations, not wall-clock periods.
-- [ ] Record observed contamination/gap/scale-floor limits. Use synthetic robustness language;
+- [x] Record observed contamination/gap/scale-floor limits. Use synthetic robustness language;
   do not claim official F1, real-data generalization, or an invented speed/memory benchmark.
-- [ ] Run owned/full tests, lint/format/mypy/pip/repository checks and fresh CLI smoke. Request
+- [x] Run owned/full tests, lint/format/mypy/pip/repository checks and fresh CLI smoke. Request
   independent review, fix findings, record exact evidence and commit the phase and final handoff.
 
 ## External completion boundary
 
-- [ ] Recheck for actual official assets/permissions/Q01/Q09 answers. If absent, leave KS-04/05
+- [x] Recheck for actual official assets/permissions/Q01/Q09 answers. If absent, leave KS-04/05
   BLOCKED with precise required inputs, never substitute public NAB or synthetic EDA results.
-- [ ] Prepare final PR text with all phase commits, scope and review obligations. Leave publication
+- [x] Prepare final PR text with all phase commits, scope and review obligations. Leave publication
   local until authorized under ADR-09. Ayush reconciles central records after review/integration.
