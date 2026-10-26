@@ -1,5 +1,10 @@
 # INIT-01 foundation handoff
 
+Historical initialization record. The local-only sharing status and GitHub setup actions below
+were superseded by the user-authorized publication in
+[INIT-02](INIT-02_initializer_20261026T144536Z_github-publication.md). Implementation/test evidence
+remains applicable to the original foundation snapshot.
+
 - Task ID: INIT-01.
 - Developer: initialization agent under the user's foundation request.
 - Original owner: Ayush is future coordinator/integration maintainer; no team identity is inferred

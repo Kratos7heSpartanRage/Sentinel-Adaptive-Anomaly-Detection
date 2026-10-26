@@ -11,7 +11,7 @@
 | pytest 8.3.5 | Hand-derived correctness, integration, leakage regression tests | Pinned development dependency |
 | Ruff 0.11.13 | Fast lint and uniform formatting | Pinned; required checks |
 | mypy 1.15.0 | Validate module signatures and typed boundaries | Strict for src/; tests are runtime-checked by pytest |
-| Git and GitHub PRs | Durable context and independent contributor branches | Local Git initialization; remote is a human setup step |
+| Git and GitHub PRs | Durable context and independent contributor branches | Foundation pushed to user-specified GitHub repository; PR permissions/protection remain owner setup |
 | GitHub Actions | Reproduce checks on Windows/Linux, Python 3.11/3.13 | Workflow configured; no remote run is implied |
 | Optional scikit-learn | IF/LOF/OCSVM comparisons if experiments justify them | Not installed as project dependencies |
 | Optional River / STUMPY / libspot | Drift / shape / EVT research candidates | Not adopted; version/platform/license review first |

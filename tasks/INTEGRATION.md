@@ -59,7 +59,9 @@ Tag/release proposals after authorization: `foundation-v0.1`, `baseline-v0.2`, `
 shared commit, config/split hashes, checks, and known limitations. Do not claim a release exists
 before it is created.
 
-GitHub is not configured by this foundation. Follow README to create an empty repository and
-add its actual URL, then push the reviewed local snapshot using your credentials. Invite teammates
-and enable protections manually. Local Git commits are not automatically available on other
-computers. Do not place tokens in remote URLs, config examples, committed files, or logs.
+The user specified [Manas-Jain-24/sentinel-adaptive-anomaly-detection](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection)
+and authorized publication. `origin` points there, and foundation `main` was pushed after checking
+that no remote branches existed. Teammates follow README clone/setup instructions. The owner
+still arranges contributor access and desired branch protections. Future local commits must be
+pushed/shared before another computer can retrieve them. Do not place tokens in remote URLs,
+config examples, committed files, or logs.

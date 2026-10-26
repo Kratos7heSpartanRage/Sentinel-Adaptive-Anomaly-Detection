@@ -3,7 +3,7 @@
 Maintainer: Ayush after initialization. Date: 2026-10-26 (Asia/Kolkata).
 INIT-01 foundation initialization is complete; [VALIDATION](VALIDATION.md) records actual results.
 Inspect Git/code/tests before trusting this summary. This foundation does not claim a valid
-official submission, completed Level A, a finished adaptive ensemble, or a remote repository.
+official submission, completed Level A, or a finished adaptive ensemble.
 
 ## Actual implementation
 
@@ -28,11 +28,14 @@ The artificial event matched with provisional F1=1.0; this is software wiring ev
 Raw logs/snapshots are in docs/validation. Windows/Python 3.13.5 executed; other CI environments
 and teammate clean-clone reproduction remain unexecuted.
 
-Local Git is initialized on main using the existing configured identity; no remote exists.
-The foundation snapshot and handoff are local-only; consult actual history and the
-[INIT-01 handoff](HANDOFFS/INIT-01_initializer_20261026T142804Z_foundation.md) for the existing
-implementation commit reference. No push, PR, tag, remote creation, invitation,
-final submission, or access from another computer is implied.
+`main` tracks `origin/main` at the user-specified repository:
+[Manas-Jain-24/sentinel-adaptive-anomaly-detection](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection).
+The foundation commits were pushed successfully on 2026-10-26 after confirming the remote had
+no branches. The existing configured Git identity was retained. See the
+[publication handoff](HANDOFFS/INIT-02_initializer_20261026T144536Z_github-publication.md) and
+actual Git history for sharing state. Teammates can clone the repository subject to access permissions.
+No PR, tag, collaborator invitation, branch protection, or competition submission was created.
+Remote CI results are not claimed; only the local checks above were verified.
 
 ## Known external blockers
 

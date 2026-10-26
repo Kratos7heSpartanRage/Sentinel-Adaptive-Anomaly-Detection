@@ -1,8 +1,8 @@
 # Sentinel Pulse
 
 Causal, interpretable streaming anomaly detection for **Utkrishta 2026, Challenge 2: Sentinel**.
-Suggested GitHub repository name: **`sentinel-pulse`**. The local foundation is initialized on
-`main`; no remote repository is configured.
+GitHub repository: [Manas-Jain-24/sentinel-adaptive-anomaly-detection](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection).
+The foundation is published on `main`. The Python package and project name remain Sentinel Pulse.
 
 **Status:** runnable starter, research and engineering blueprint. The competitive detector,
 official dataset adapter, official scorer/exporter, and dashboard remain planned work.
@@ -69,19 +69,16 @@ and `score=null`; that is a documented internal convention awaiting organizer co
 | Manas | Detection baselines, residual scoring, thresholds, adaptation | [MANAS](tasks/MANAS.md) |
 | Mayank | Event evaluation, experiment harness, result visualization/demo | [MAYANK](tasks/MAYANK.md) |
 
-## GitHub setup
+## Clone and collaborate
 
-Local Git on `main` contains the foundation snapshot; inspect `git status`, `git log`, and
-[CURRENT_STATE](docs/CURRENT_STATE.md) for actual history. Create an **empty**
-GitHub repository named `sentinel-pulse` in your account, then run these commands with its actual URL:
+The foundation was pushed to the user-specified repository. Teammates can clone it:
 
 ```text
-git remote add origin <actual-repository-url>
-git push -u origin main
+git clone https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection.git
+cd sentinel-adaptive-anomaly-detection
 ```
 
-If no commit exists yet, review `git diff`/`git status`, configure your own Git identity,
-stage the intended project files, and commit first. Do not invent someone else's identity.
-Invite all four contributors through GitHub. Each uses a separate clone and a task branch such
-as `feat/manas/MN-01-zscore`; open PRs to `main`. Remote creation, invitations, and pushing have
-not been performed by this initialization. See [integration rules](tasks/INTEGRATION.md).
+Then follow local setup above and [START_HERE](docs/START_HERE.md). Use your own Git identity,
+separate clone, and task branch such as `feat/manas/MN-01-zscore`; open PRs to `main`.
+The repository owner still needs to arrange contributor permissions and desired branch protection;
+invitations/protection have not been configured here. See [integration rules](tasks/INTEGRATION.md).

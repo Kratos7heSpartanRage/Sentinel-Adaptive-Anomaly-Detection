@@ -4,6 +4,10 @@ Task INIT-01, 2026-10-26. Environment: Windows 11, Python 3.13.5, Git 2.54.0.win
 These are executed local checks. Linux/other Python CI and teammate clean-clone reproduction
 have not executed. No official benchmark or hidden evaluation ran.
 
+This evidence records the original initialization before GitHub publication. Later sharing status
+is recorded in CURRENT_STATE and the INIT-02 publication handoff; the original no-remote observations
+below are historical. Publication changes documentation/remote configuration, not algorithm behavior.
+
 ## Commands and outcomes
 
 Commands use the installed virtual environment interpreter; README provides exact PowerShell paths.
