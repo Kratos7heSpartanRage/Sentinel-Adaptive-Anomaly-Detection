@@ -11,7 +11,7 @@ half-day including verification; no calendar deadline or skill level is assumed.
 
 | ID | Priority / effort | Task and explicit deliverable | Dependencies | Status |
 |---|---|---|---|---|
-| KS-01 | P0 / 2 | Build inventory/provenance manifest schema and validator; lengths/cadence/gaps/duplicates/finite values; audit fixtures now and real assets when received | Observation schema, fixtures | TODO |
+| KS-01 | P0 / 2 | Build inventory/provenance manifest schema and validator; lengths/cadence/gaps/duplicates/finite values; audit fixtures now and real assets when received | Observation schema, fixtures | IN_REVIEW |
 | KS-02 | P0 / 3 | Implement bounded causal FeatureExtractor: prior median/scale, expected delta, observed delta, optional past-only seasonal reference with explicit unavailable state | FeatureFrame Protocol; no final detector dependency | TODO |
 | KS-03 | P0 / 2 | Implement deterministic group/chronological split manifest tooling and boundary-purge validation; hashes and group constraints | Synthetic manifest for tests; use real inventory later | TODO |
 | KS-04 | P0 / 2 | Adapt organizer starter files/labels to canonical input, with documented timezone/gap/column mapping and access provenance | Official assets and Q01/Q09 answers | BLOCKED |
@@ -56,10 +56,44 @@ data notes, and a unique task handoff; update only this personal task file and o
 
 ## Handoff and local progress
 
-No KS task is complete at initialization. `data/io.py` is a strict internal reader, not the raw
-NAB adapter/inventory/split/features package. Record branch, shared commit, actual commands,
-results/blockers, and next actions here; follow [HANDOFF_PROTOCOL](../docs/HANDOFF_PROTOCOL.md).
-Never edit shared CURRENT_STATE/TASK_BOARD concurrently with other developers.
+Initialization supplied only the strict internal reader `data/io.py`. The progress below records
+subsequent owned work; shared CURRENT_STATE/TASK_BOARD/INTEGRATION remain Ayush's responsibility.
+
+### KS-01: inventory/provenance validation, 2026-10-26 (Asia/Kolkata)
+
+- Status: IN_REVIEW. Synthetic acceptance cases are implemented and verified; Ayush/Mayank review
+  and integration remain pending. No official asset inventory or peer approval is claimed.
+- Branch: `feat/kaustubh/KS-01-inventory`, from main `d7158d62eb8fa4e4c5d4907238d03c5989967083`.
+- Implementation commit: `9092d118201c62fec318a28afc9f9670a55745a8` (local only, not pushed).
+  Another machine cannot retrieve this work until an authorized push/shared archive exists.
+- Code: `src/sentinel/data/inventory.py` adds typed source/inventory dataclasses, required source
+  and permission declarations, portable contained paths, exact file hashes/sizes, per-series
+  lengths/UTC ranges/value ranges/cadence/gap statistics, deterministic new-file JSON, and full
+  schema/checksum/statistic revalidation. It reuses the canonical reader and rejects duplicates,
+  backwards instants, nonfinite/malformed inputs, repeated source/series IDs, and stale manifests.
+- Tests: `tests/data/test_inventory.py`. Documentation/example:
+  [data inventory](../docs/DATA_INVENTORY.md) and
+  [synthetic audit](../docs/data/synthetic-fixture-inventory.json).
+- Actual final checks on Windows/Python 3.12.14: owned tests **70 passed, 1 skipped**; full suite
+  **94 passed, 1 skipped** (95 collected). Windows lacks symlink-creation privilege; the escaping
+  symlink test is skipped and must run on a capable CI/reviewer host. Ruff lint/format, strict
+  mypy (13 source files), pip dependency check, repository checker, and Git whitespace checks pass.
+- Existing CLI replay/evaluation passed on 16 synthetic fixture points. Audit source SHA256 and
+  observation count match the CLI manifest. The provisional artificial-event result was TP=1,
+  FP=0, FN=0; this is wiring evidence only. No official benchmark or performance measurement ran.
+- Contracts: shared Observation/FeatureFrame/config/run.json are unchanged. The separate versioned
+  inventory format is proposed for consumer review before AY-01/MY-02/KS-03 adoption. Declared
+  provenance is an operator assertion; unknown cadence does not imply zero missing samples.
+- Independent agent review reproduced the checks and reported no findings. This does not supply
+  Ayush/Mayank approval; required owner review remains pending.
+- Limits/dependencies: offline exact cadence medians retain O(N) intervals; inputs must remain
+  stable during audit. Official data/permissions/timezone mapping remain missing (KS-04 blocker).
+  No raw adapter, labels, features, splits, or detector fitting are added by this task.
+- Exact commands, results, review/publication obligations and continuation steps are in the
+  [KS-01 handoff](../docs/HANDOFFS/KS-01_kaustubh_20261026T152032Z_inventory.md).
+- Next: obtain Ayush's manifest/order review and Mayank's consumer review, publish/open the
+  prepared PR when authorized, then start **KS-02** on its own feature branch. Coordinate bounded
+  feature configuration with Ayush/Manas before changing shared contracts. KS-03 remains TODO.
 
 Optional stretch: contribute past-only reference-window tooling for EXP-09/S2 after P0 tasks;
 coordinate with Manas and document horizon/memory effects before adoption.
