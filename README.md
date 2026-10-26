@@ -1,0 +1,87 @@
+# Sentinel Pulse
+
+Causal, interpretable streaming anomaly detection for **Utkrishta 2026, Challenge 2: Sentinel**.
+Suggested GitHub repository name: **`sentinel-pulse`**. A local foundation is being initialized;
+no remote repository is implied.
+
+**Status:** runnable starter, research and engineering blueprint. The competitive detector,
+official dataset adapter, official scorer/exporter, and dashboard remain planned work.
+The organizer dataset, scoring code, submission schema, hardware limits, and deadline were not
+provided. No official benchmark or hidden evaluation has been performed.
+
+## Start here
+
+- Humans and coding agents: [docs/START_HERE.md](docs/START_HERE.md).
+- Agent rules: [AGENTS.md](AGENTS.md).
+- Verified integrated state: [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+- Product: [PRD](docs/PRD.md); design: [architecture](docs/ARCHITECTURE.md).
+- Shared types and formats: [interfaces](docs/INTERFACES.md).
+- Work: [task board](tasks/TASK_BOARD.md); [developer prompts](tasks/AGENT_PROMPTS.md).
+- Authoritative rules: [official PDF](<Utkrishta 2026 Participant Problem Statements.pdf>).
+
+## Local setup
+
+Python **3.11 or newer** and Git are required. Core processing uses the Python standard library;
+development dependencies are pinned in `pyproject.toml`. No accounts, GPU, API key, database,
+frontend, or network service is needed to execute the starter.
+
+Windows PowerShell, from the repository root (activation is optional):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e '.[dev]'
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m ruff format --check .
+.\.venv\Scripts\python.exe -m mypy
+.\.venv\Scripts\python.exe scripts/check_repository.py
+.\.venv\Scripts\python.exe -m sentinel run --input tests/fixtures/synthetic_stream.csv --config configs/starter.json --output-dir outputs/my-smoke-001 --dataset-id synthetic-fixture-v1 --scope synthetic_smoke
+.\.venv\Scripts\python.exe -m sentinel evaluate --run-dir outputs/my-smoke-001 --windows tests/fixtures/synthetic_windows.json
+```
+
+On macOS/Linux, substitute `.venv/bin/python` for `.\.venv\Scripts\python.exe`.
+Use a new output directory for every run; existing run artifacts are never overwritten.
+
+This replays **16 synthetic points**, writes `predictions.jsonl` and `run.json`, then evaluates
+the artificial event using **`provisional_event_trigger_f1_v0`**. A successful smoke result
+proves software wiring only. It is neither the official metric implementation nor a NAB result.
+Input timestamps must include an offset. Raw NAB CSV files need a documented adapter first.
+
+## What exists
+
+`src/sentinel/` contains typed contracts, strict canonical CSV ingestion, JSON config,
+a causal rolling median/MAD starter, independent per-series state, CLI replay, numeric evidence,
+checksummed run manifests, detector timing, and a provisional event evaluator. Output publication
+uses a temporary directory so input errors do not publish a partial run. Unit/integration tests,
+synthetic fixtures, a repository checker, and a Windows/Linux CI definition are included.
+
+Level B adds residual features, causal seasonal prediction, calibrated thresholds, and guarded
+adaptation **only after comparisons**. See [delivery levels](docs/PRD.md) and
+[experiment plan](docs/EXPERIMENT_PLAN.md). Warmup currently emits NORMAL with `ready=false`
+and `score=null`; that is a documented internal convention awaiting organizer confirmation.
+
+## Team
+
+| Developer | Primary engineering ownership | Task file |
+|---|---|---|
+| Ayush | CLI, streaming orchestration, persistence, export, integration | [AYUSH](tasks/AYUSH.md) |
+| Kaustubh | Dataset adaptation, causal features, split/provenance manifests | [KAUSTUBH](tasks/KAUSTUBH.md) |
+| Manas | Detection baselines, residual scoring, thresholds, adaptation | [MANAS](tasks/MANAS.md) |
+| Mayank | Event evaluation, experiment harness, result visualization/demo | [MAYANK](tasks/MAYANK.md) |
+
+## GitHub setup
+
+Initialization creates local Git on `main`; inspect `git status` and
+[CURRENT_STATE](docs/CURRENT_STATE.md) for whether a snapshot commit exists. Create an **empty**
+GitHub repository named `sentinel-pulse` in your account, then run these commands with its actual URL:
+
+```text
+git remote add origin <actual-repository-url>
+git push -u origin main
+```
+
+If no commit exists yet, review `git diff`/`git status`, configure your own Git identity,
+stage the intended project files, and commit first. Do not invent someone else's identity.
+Invite all four contributors through GitHub. Each uses a separate clone and a task branch such
+as `feat/manas/MN-01-zscore`; open PRs to `main`. Remote creation, invitations, and pushing have
+not been performed by this initialization. See [integration rules](tasks/INTEGRATION.md).

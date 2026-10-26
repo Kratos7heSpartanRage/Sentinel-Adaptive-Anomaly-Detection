@@ -1,0 +1,106 @@
+[
+  {
+    "check": "pytest",
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "ruff-lint",
+    "command": [
+      "python",
+      "-m",
+      "ruff",
+      "check",
+      "."
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "ruff-format",
+    "command": [
+      "python",
+      "-m",
+      "ruff",
+      "format",
+      "--check",
+      "."
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "mypy",
+    "command": [
+      "python",
+      "-m",
+      "mypy"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "repository",
+    "command": [
+      "python",
+      "scripts/check_repository.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "pip-check",
+    "command": [
+      "python",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "cli-help",
+    "command": [
+      "python",
+      "-m",
+      "sentinel",
+      "--help"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "smoke-run",
+    "command": [
+      "python",
+      "-m",
+      "sentinel",
+      "run",
+      "--input",
+      "tests/fixtures/synthetic_stream.csv",
+      "--config",
+      "configs/starter.json",
+      "--output-dir",
+      "outputs/initialization-smoke-003",
+      "--dataset-id",
+      "synthetic-fixture-v1",
+      "--scope",
+      "synthetic_smoke"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "smoke-evaluate",
+    "command": [
+      "python",
+      "-m",
+      "sentinel",
+      "evaluate",
+      "--run-dir",
+      "outputs/initialization-smoke-003",
+      "--windows",
+      "tests/fixtures/synthetic_windows.json"
+    ],
+    "exit_code": 0
+  }
+]

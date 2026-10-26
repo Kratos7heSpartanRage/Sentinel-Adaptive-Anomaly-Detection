@@ -1,0 +1,7 @@
+{
+  "window_size": 32,
+  "min_history": 8,
+  "threshold": 4.0,
+  "scale_floor": 0.1,
+  "max_series": 100
+}

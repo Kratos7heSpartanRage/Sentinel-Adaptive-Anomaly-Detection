@@ -1,0 +1,11 @@
+usage: __main__.py [-h] {run,evaluate} ...
+
+Sentinel Pulse starter (unofficial schemas)
+
+positional arguments:
+  {run,evaluate}
+    run           Sequential replay through the starter detector
+    evaluate      Provisional local event F1, not official scoring
+
+options:
+  -h, --help      show this help message and exit

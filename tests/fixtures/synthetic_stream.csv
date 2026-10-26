@@ -1,0 +1,17 @@
+series_id,timestamp,value
+synthetic-demo,2026-01-01T00:00:00Z,10.0
+synthetic-demo,2026-01-01T00:01:00Z,10.1
+synthetic-demo,2026-01-01T00:02:00Z,9.9
+synthetic-demo,2026-01-01T00:03:00Z,10.0
+synthetic-demo,2026-01-01T00:04:00Z,10.1
+synthetic-demo,2026-01-01T00:05:00Z,9.9
+synthetic-demo,2026-01-01T00:06:00Z,10.0
+synthetic-demo,2026-01-01T00:07:00Z,10.0
+synthetic-demo,2026-01-01T00:08:00Z,10.1
+synthetic-demo,2026-01-01T00:09:00Z,9.9
+synthetic-demo,2026-01-01T00:10:00Z,15.0
+synthetic-demo,2026-01-01T00:11:00Z,10.0
+synthetic-demo,2026-01-01T00:12:00Z,10.1
+synthetic-demo,2026-01-01T00:13:00Z,10.0
+synthetic-demo,2026-01-01T00:14:00Z,9.9
+synthetic-demo,2026-01-01T00:15:00Z,10.0
