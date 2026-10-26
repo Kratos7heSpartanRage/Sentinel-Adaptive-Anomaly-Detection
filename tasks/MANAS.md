@@ -94,3 +94,8 @@ review and merge remain pending. Central integration summaries have not been cha
   but still block genuine performance selection under MN-05.
 - Next actionable task: **MN-02**, using a deterministic `FeatureExtractor` double until KS-02
   is available. MN-03 remains a separate causal prior-score calibration task.
+
+Implementation commit: `5e28d5c4b9fd6b6f4517f1b18d97088cf7b47a49`, pushed to
+`origin/feat/manas/MN-01-zscore`. See the [MN-01 handoff](../docs/HANDOFFS/MN-01_manas_20261026T162226Z_rolling-zscore.md)
+for exact commands, runtime reproduction, sharing state, reviewer obligations, and continuation.
+Draft review: [PR #1](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection/pull/1).
