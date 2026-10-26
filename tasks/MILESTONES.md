@@ -18,6 +18,9 @@ unless CURRENT_STATE provides actual evidence. INIT-01 covers M1-M3 only at init
 | M9 Performance and robustness | AY-06, KS-06, MN-04, MY-06 | Candidate integrated; P1; 2-3 units | Hardware-tagged timing/memory, gap/shift/flatline stress, no numerical regression | Costly branch -> disable/remove, rerun gates |
 | M10 Submission preparation | AY-04/05, MY-05/06; all review | G2/G3, exact schema/deadline clarified; P0; 2-3 units | G4: untouched final evaluation, official predictions, exact 10 slides, demo, setup/handoff checklist | Last-minute failure -> reviewed valid baseline artifacts |
 
+M1-M3 are completed for INIT-01's initialization scope, with actual evidence in CURRENT_STATE and
+VALIDATION. M4-M10 remain planned/incomplete; official assets are still missing.
+
 Level C tasks (MN-06, S1-S3) start after valid A and a measured B, with explicit go/no-go gates.
 No plan depends on a stretch feature succeeding. First shared milestone after initialization is
 M4/G1; obtaining assets/scorer/schema is an immediate external dependency, not a fabricated

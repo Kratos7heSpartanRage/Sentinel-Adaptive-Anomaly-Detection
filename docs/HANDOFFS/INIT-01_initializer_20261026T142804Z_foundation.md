@@ -7,7 +7,8 @@
 - Status: DONE for initialization only. All 24 developer extensions retain personal task statuses.
   Valid Level A and final submission are incomplete.
 - Branch: main, initial foundation snapshot exception; future work uses separate task branches.
-- Implementation commit reference: pending first local snapshot; updated after that commit exists.
+- Implementation commit reference: `5e32159a4eefe9dbbad8a8cc9957f3c8b030bc62`, the existing local
+  foundation snapshot. This handoff-reference update is a subsequent documentation commit.
 - Shared location: **local-only**. No remote, push, or PR. Another computer cannot access the work
   until a real commit/remote or archive is shared.
 - Objective: researched requirements/design, typed interfaces, runnable starter, balanced workstreams,

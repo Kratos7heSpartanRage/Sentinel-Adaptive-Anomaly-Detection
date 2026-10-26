@@ -22,7 +22,7 @@ Commands use the installed virtual environment interpreter; README provides exac
 | Synthetic evaluation | README evaluate command against that run and fixture windows | TP=1, FP=0, FN=0; provisional F1=1.0, delay=0 s; exit 0; software wiring only |
 | Source provenance | Original PDF SHA256 | b93d18863425418a296cdbfe14335de73a69761f69d537d88fddb72b917f3ef0, unchanged |
 | Secret/private-asset inspection | Token/private-key pattern scan plus intended tree/ignore inspection | No matching credential patterns; only provided PDF and synthetic data included; finite inspection is not a universal guarantee |
-| Git | init main, remote/status/ignore inspection | Local main initialized, existing configured identity retained, no remote; venv/outputs ignored |
+| Git | init main, remote/status/ignore inspection, staged whitespace/hash checks, snapshot commit | Local main initialized and foundation committed; existing identity retained, no remote; no venv/outputs staged; staged synthetic/input byte checksums match manifest; whitespace check passed |
 
 Raw logs, exact commands/exit codes, installed dependency snapshot, and synthetic output snapshots
 are in [validation/](validation/). `checks.json` is machine-readable evidence. The environment

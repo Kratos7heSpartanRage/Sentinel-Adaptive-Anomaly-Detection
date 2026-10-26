@@ -1,8 +1,8 @@
 # Sentinel Pulse
 
 Causal, interpretable streaming anomaly detection for **Utkrishta 2026, Challenge 2: Sentinel**.
-Suggested GitHub repository name: **`sentinel-pulse`**. A local foundation is being initialized;
-no remote repository is implied.
+Suggested GitHub repository name: **`sentinel-pulse`**. The local foundation is initialized on
+`main`; no remote repository is configured.
 
 **Status:** runnable starter, research and engineering blueprint. The competitive detector,
 official dataset adapter, official scorer/exporter, and dashboard remain planned work.
@@ -71,8 +71,8 @@ and `score=null`; that is a documented internal convention awaiting organizer co
 
 ## GitHub setup
 
-Initialization creates local Git on `main`; inspect `git status` and
-[CURRENT_STATE](docs/CURRENT_STATE.md) for whether a snapshot commit exists. Create an **empty**
+Local Git on `main` contains the foundation snapshot; inspect `git status`, `git log`, and
+[CURRENT_STATE](docs/CURRENT_STATE.md) for actual history. Create an **empty**
 GitHub repository named `sentinel-pulse` in your account, then run these commands with its actual URL:
 
 ```text

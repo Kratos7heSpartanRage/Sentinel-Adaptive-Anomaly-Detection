@@ -31,7 +31,7 @@ and teammate clean-clone reproduction remain unexecuted.
 Local Git is initialized on main using the existing configured identity; no remote exists.
 The foundation snapshot and handoff are local-only; consult actual history and the
 [INIT-01 handoff](HANDOFFS/INIT-01_initializer_20261026T142804Z_foundation.md) for the existing
-implementation reference after snapshot creation. No push, PR, tag, remote creation, invitation,
+implementation commit reference. No push, PR, tag, remote creation, invitation,
 final submission, or access from another computer is implied.
 
 ## Known external blockers
