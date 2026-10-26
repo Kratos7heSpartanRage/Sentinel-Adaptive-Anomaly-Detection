@@ -1,4 +1,4 @@
-# Mayank - evaluation, experiment tooling, and evidence visualization
+﻿# Mayank - evaluation, experiment tooling, and evidence visualization
 
 Role: evaluation/tooling engineer with substantial implementation ownership. Own
 `src/sentinel/evaluation/`, `tests/evaluation/`, future `experiments/`, future `demo/`, and
@@ -11,7 +11,7 @@ half-day including verification; no experience level or hackathon deadline is as
 
 | ID | Priority / effort | Task and explicit deliverable | Dependencies | Status |
 |---|---|---|---|---|
-| MY-01 | P0 / 2 | Expand event golden tests: boundaries, repeated episodes, warmup, no-event series, gaps, interleaving, micro/macro; state policy in reports | Existing provisional evaluator and fixtures | TODO |
+| MY-01 | P0 / 2 | Expand event golden tests: boundaries, repeated episodes, warmup, no-event series, gaps, interleaving, micro/macro; state policy in reports | Existing provisional evaluator and fixtures | DONE |
 | MY-02 | P0 / 3 | Build config/split-driven experiment harness and immutable result index; compare baseline/candidates with reproducibility metadata and error slices | Current artifact schema; use real runner/test double now | TODO |
 | MY-03 | P1 / 3 | Implement offline artifact viewer with trace/flags/score/threshold/evidence/provenance/runtime and graceful missing-data behavior | Saved starter run exists; no final model needed | TODO |
 | MY-04 | P0 / 2 | Integrate actual organizer scorer, prove parity on golden examples, document event/warmup/aggregation semantics | Official scorer and Q02-Q05 answers | BLOCKED |
@@ -44,11 +44,30 @@ Official evaluator changes and schema extensions follow coordinated contract rev
 
 ## Handoff and local progress
 
-No MY task is complete at initialization. The existing reference evaluator is a provisional
-software foundation; no full experiment harness, official scorer, UI, deck, or final report exists.
-Record branch, shared commit, commands/results, blockers, and exact next actions here plus a
-unique handoff. Ayush updates shared integration summaries after review; do not edit them
-concurrently. [HANDOFF_PROTOCOL](../docs/HANDOFF_PROTOCOL.md) defines portable continuation.
-
-Optional stretch: build paired series-level bootstrap/error comparisons or expert-selection
-diagnostics only when event/group counts support the analysis and P0 evaluation is correct.
+- **2026-10-26 (MY-01 DONE)**: Branch `feat/mayank/MY-01-event-cases`.
+  - Implemented expanded evaluation metrics in `src/sentinel/evaluation/reference.py`:
+    - Added delay distributions: `median_delay_seconds`, `p95_delay_seconds`, `min_delay_seconds`, `max_delay_seconds`.
+    - Added `missed_events` count alongside delay reporting.
+    - Added per-series metric tracking (`per_series` dictionary with series-level TP, FP, FN, precision, recall, F1, observations, warmup, and delays).
+    - Added macro metrics: `macro_precision`, `macro_recall`, `macro_event_f1` averaged across all series present in predictions.
+    - Added explicit `policy` metadata block stating the conservative matching rules, pre-window trigger policy, repeat trigger handling, zero-denominator convention, and warmup tracking.
+    - Added `format_evaluation_report()` helper function producing clean, human-readable markdown summary reports.
+  - Created comprehensive golden test suite in `tests/evaluation/test_golden_events.py` (27 golden test cases):
+    - Exact boundary matching (window.start, window.end, single-timestamp windows).
+    - Pre-window alerts extending into window (conservative FP + FN policy).
+    - Post-window alerts (FP + FN policy).
+    - Repeated anomaly pulses within single windows (first pulse TP, repeat pulses FP).
+    - Long continuous episode spanning entire window (1 TP, 0 FP).
+    - Multiple disjoint windows and partial hits with interspersed false alarms.
+    - Warmup interactions: events during warmup missed (FN) with warmup count recorded; straddled windows correctly triggered upon readiness.
+    - Clean/zero-event series and zero-denominator convention (precision=0.0, recall=0.0, F1=0.0).
+    - Micro vs. Macro divergence verification.
+    - Multi-series chronological interleaving and complete state isolation.
+    - Irregular cadence and temporal gaps.
+    - Delay distribution percentiles verified against known mathematical values.
+    - Strict schema and contract validation error rejections.
+  - Verified:
+    - 51/51 pytest tests pass (`pytest tests -v` in 1.56s).
+    - `python scripts/check_repository.py` passes (32 docs, 89 relative links, 24 unique team tasks, PDF hash match).
+  - Handoff file: [MY-01 handoff](../docs/HANDOFFS/MY-01_mayank_20261026T225700Z_event-golden-tests.md).
+  - Next unblocked task: **MY-02** (P0: config/split-driven experiment harness and immutable result index).
