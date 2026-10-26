@@ -13,10 +13,10 @@ half-day including verification; no calendar deadline or skill level is assumed.
 |---|---|---|---|---|
 | KS-01 | P0 / 2 | Build inventory/provenance manifest schema and validator; lengths/cadence/gaps/duplicates/finite values; audit fixtures now and real assets when received | Observation schema, fixtures | IN_REVIEW |
 | KS-02 | P0 / 3 | Implement bounded causal FeatureExtractor: prior median/scale, expected delta, observed delta, optional past-only seasonal reference with explicit unavailable state | FeatureFrame Protocol; no final detector dependency | IN_REVIEW |
-| KS-03 | P0 / 2 | Implement deterministic group/chronological split manifest tooling and boundary-purge validation; hashes and group constraints | Synthetic manifest for tests; use real inventory later | IN_PROGRESS |
+| KS-03 | P0 / 2 | Implement deterministic group/chronological split manifest tooling and boundary-purge validation; hashes and group constraints | Synthetic manifest for tests; use real inventory later | IN_REVIEW |
 | KS-04 | P0 / 2 | Adapt organizer starter files/labels to canonical input, with documented timezone/gap/column mapping and access provenance | Official assets and Q01/Q09 answers | BLOCKED |
 | KS-05 | P1 / 2 | Real dataset EDA and train-only periodicity/cadence analysis; provide figures/notes for slides 3/5 and EXP-01 | KS-04, permitted development labels | BLOCKED |
-| KS-06 | P1 / 2 | Stress feature/data behavior on missing spans, rescaling, contaminated warmup, flat/short series; report limitations | KS-02/03 | TODO |
+| KS-06 | P1 / 2 | Stress feature/data behavior on missing spans, rescaling, contaminated warmup, flat/short series; report limitations | KS-02/03 | IN_PROGRESS |
 
 **First three tasks:** KS-01, KS-02, KS-03. KS-01 starts on synthetic inputs with explicit labels
 and cannot claim a real NAB inventory. KS-02/03 can be developed with fixed mock manifests;
@@ -119,3 +119,25 @@ coordinate with Manas and document horizon/memory effects before adoption.
   [KS-02 handoff](../docs/HANDOFFS/KS-02_kaustubh_20261026T155217Z_features.md).
 - Next software phase: KS-03 frozen splits; then KS-06 stress/integration. KS-04/05 remain blocked
   by actual organizer assets and permissions. No official performance result has been produced.
+
+### Phased continuation: KS-03, 2026-10-26 (Asia/Kolkata)
+
+- Status IN_REVIEW; software phase complete, Ayush/Mayank approval pending. Implementation commit
+  `8047bc4bc7ff9c975c1901ad10af1cd26fe7e720` on the aggregate branch, local only/not pushed.
+- Added `src/sentinel/data/splits.py`, `tests/data/test_splits.py`,
+  [split semantics/API](../docs/DATA_SPLITS.md) and
+  [synthetic example](../docs/data/synthetic-fixture-split.json). Explicit full-group assignment or
+  per-series chronological cuts; deterministic inventory/split hashes, strict source-backed
+  validation, explicit context/targets and conservative boundary purging. No random split/seed,
+  label loading, model fitting, shared contract or other-owner edits.
+- Final focused split tests: 45 passed; full suite: 169 passed/1 skipped (170 collected). Ruff
+  lint/format pass (20 files), mypy passes (15 source files), repository/whitespace checks pass.
+  Actual feature replay on declared context matches uninterrupted causal replay. Only Windows/
+  Python 3.12 executed; the previous symlink privilege skip remains.
+- Independent review found no Critical/Important/Minor issues and verified source/schema tamper
+  rejection and cross-partition support isolation. This does not imply human approval.
+- Context carry permits preceding observations, not implicit detector checkpoint/state reuse.
+  The consumer must declare enough effective history; bounds do not prove statistical independence.
+- Exact evidence, schema obligations and continuation are in the
+  [KS-03 handoff](../docs/HANDOFFS/KS-03_kaustubh_20261026T160340Z_splits.md).
+- Next phase: KS-06 stress/integration and limitations report. KS-04/05 remain externally blocked.

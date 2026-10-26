@@ -42,22 +42,22 @@ InventoryManifest, not labels; new data-owned split format remains proposed for 
 Produce build_group_split(inventory, assignments), build_chronological_split(inventory, cuts,
 lookback, past_context), deterministic write/validate functions and split_digest.
 
-- [ ] Write hand-derived tests: group assignment must keep all related series in one partition;
+- [x] Write hand-derived tests: group assignment must keep all related series in one partition;
   explicit complete group mapping is deterministic and requires train plus validation. No random
   split/seed is needed. Missing/extra groups, invalid partitions and overlapping examples fail.
-- [ ] For chronological splits use per-series exclusive cuts train_stop, calibration_stop. A
+- [x] For chronological splits use per-series exclusive cuts train_stop, calibration_stop. A
   target t uses support [t-lookback,t]. Reset policy keeps warmup inside each partition; carry
   policy explicitly reserves lookback previous points as context and purges preceding targets
   whose support could overlap the next partition's first example. With N=30, cuts 12/22, L=3,
   carry target ranges are [3,9), [12,19), [22,30); supports are disjoint between partitions.
-- [ ] Run failing tests, then implement strict cut/length/policy validation. Reject empty target
+- [x] Run failing tests, then implement strict cut/length/policy validation. Reject empty target
   ranges, noninteger/bool indices, incomplete series mappings, stale inventory linkage, unknown
   JSON fields/types, changed hashes/statistics or weakened purge/context metadata. Sort all
   mappings/ranges deterministically; encode source hashes and full inventory digest.
-- [ ] Test no shared feature-support observations across partition boundaries, group-held-out
+- [x] Test no shared feature-support observations across partition boundaries, group-held-out
   isolation, explicit context allowance, stable order/digest, no overwrite and source-backed
   validation. Keep source bytes read-only; no label-dependent boundaries or fitting.
-- [ ] Run checks and independent review; fix findings before documenting/committing this phase.
+- [x] Run checks and independent review; fix findings before documenting/committing this phase.
 
 ## Phase 3: KS-06 robustness and integration
 
