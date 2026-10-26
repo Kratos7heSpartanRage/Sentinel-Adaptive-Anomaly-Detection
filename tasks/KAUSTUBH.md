@@ -177,3 +177,28 @@ the latest continuation state. Active branch: `feat/kaustubh/KS-01-02-03-06-data
   exact commands/commits/restart steps; [prepared PR](../docs/data/KAUSTUBH_PR_SUMMARY.md) is ready
   for publication when authorized under ADR-09. Ayush updates central integration records after
   human review/merge. Next engineering task is KS-04 when its external inputs actually arrive.
+
+### Latest publication status: shared PR and receiving-agent instructions
+
+2026-10-26 (Asia/Kolkata). This supersedes all historical local-only publication statements above.
+The user explicitly requested pushing the branch as a PR and documenting remaining work so a
+friend with a fresh coding agent can continue. They also requested a copyable agent prompt.
+
+- Published branch: `origin/feat/kaustubh/KS-01-02-03-06-data-workstream`.
+- Open [PR #2](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection/pull/2) targets
+  main. No merge or force push occurred. Shared initial snapshot:
+  `955564571de61971ac270addf6cd560bc918c4da`; later documentation commits record publication.
+- Fresh pre-publication checks: pytest 191 passed/1 skipped; Ruff lint/format, strict mypy
+  (15 source files), pip check, repository/PDF/link and Git whitespace checks pass. Check the PR's
+  latest CI head for actual Ubuntu/Windows Python 3.11/3.13 results; local tests remain Python 3.12.
+- KS-01/02/03/06 remain IN_REVIEW: publish/review does not imply owner approval or integration.
+  Review the new manifests and feature settings, then coordinate wiring with existing Ayush,
+  Manas and Mayank tasks/branches. Ayush alone updates central records after authorized merge.
+- KS-04/05 remain BLOCKED for the confirmed missing official pack/permissions/Q01/Q09 answers;
+  no synthetic/public dataset substitution or assumed raw timestamp convention is authorized.
+- Original owner remains Kaustubh. Receiving developer identity is unspecified; confirm it before
+  editing owned modules. User authorized sharing/continuation, not taking over active work of
+  other named developers or bypassing shared-contract review/main-merge authorization.
+- Start with the [publication handoff](../docs/HANDOFFS/KS-06_kaustubh_20261026T163753Z_publication.md)
+  and [agent prompt](../docs/data/KAUSTUBH_AGENT_PROMPT.md), which contain exact retrieval/check
+  commands, remaining tasks, owners, reasons, context policies, limits and next actions.

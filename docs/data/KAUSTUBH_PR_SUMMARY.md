@@ -1,7 +1,10 @@
 # Prepared PR: audit data, emit causal features, and freeze leakage-checked splits
 
-Publication status: local preparation only; no remote branch or PR exists for this workstream.
-Branch: `feat/kaustubh/KS-01-02-03-06-data-workstream`. Base: reviewed foundation main.
+Publication status: **shared, open [PR #2](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection/pull/2)**,
+created at the user's explicit request on 2026-10-26. Branch:
+`feat/kaustubh/KS-01-02-03-06-data-workstream`; base: reviewed foundation main. No merge performed.
+Earlier phase handoffs saying local-only describe historical snapshots, superseded by the
+[publication handoff](../HANDOFFS/KS-06_kaustubh_20261026T163753Z_publication.md).
 
 ## Outcome
 
@@ -54,7 +57,8 @@ and consumer usability. Fixed floors, contaminated warmup, sample-lag gap limita
 persistent-state policy are explicit. Review and freeze effective feature history/context rules
 before harness use. Ayush synchronizes CURRENT_STATE/TASK_BOARD/INTEGRATION after verification.
 
-Publish only when authorized under ADR-09. Until a push/shared archive exists, these commits and
-ignored smoke/review artifacts are unavailable to teammates on another computer. When actual
+The user explicitly authorized publication and friend-agent continuation. The feature branch and
+implementation commits are now retrievable; ignored smoke/review artifacts remain local.
+See the [copyable agent prompt](KAUSTUBH_AGENT_PROMPT.md). When actual
 official assets arrive, preserve raw bytes, confirm permission/timezone/columns, complete KS-04
 organizer sample mapping, then KS-05 train-only EDA. Do not infer those answers from this fixture.
