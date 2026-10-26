@@ -20,18 +20,18 @@ reset() -> None, implementing the existing per-series protocol. Constructor-only
 settings: window_size=32, min_history=8, scale_floor=0.1, seasonal_period=None. No shared config
 schema/CLI change; propose settings for Ayush/Manas review before adoption.
 
-- [ ] Write tests before implementation. Hand trace: prior [1,3] at current 9 gives level 2,
+- [x] Write tests before implementation. Hand trace: prior [1,3] at current 9 gives level 2,
   expected_delta 2, current delta 6, scale 1.4826. Warmup expectations/scale are null. Use:
   `extractor = RollingFeatureExtractor(window_size=3, min_history=2, scale_floor=0.1)`.
-- [ ] Run `python -m pytest tests/data/test_features.py` and observe the absent-module failure.
-- [ ] Implement bounded prior-value median/MAD and median adjacent prior deltas. Compute the
+- [x] Run `python -m pytest tests/data/test_features.py` and observe the absent-module failure.
+- [x] Implement bounded prior-value median/MAD and median adjacent prior deltas. Compute the
   current delta from the last point; seasonal reference is value at lag P only when ready and
   P earlier points exist. P is explicit/train-selected and <= window_size; never estimate it from
   the full trace. Check finite outputs and chronology before changing state, normalize frame time
   to UTC, and reject a second series on the same instance. reset clears history/series identity.
-- [ ] Verify exact traces, floor, prefix invariance, changed-current expectations, reset, isolated
+- [x] Verify exact traces, floor, prefix invariance, changed-current expectations, reset, isolated
   instances, capped history, seasonal readiness/lag, malformed config and overflow recovery.
-- [ ] Run owned/full tests, Ruff lint/format, mypy, repository checker; request independent review,
+- [x] Run owned/full tests, Ruff lint/format, mypy, repository checker; request independent review,
   fix substantive findings and rerun affected checks. Record exact results and commit this phase.
 
 ## Phase 2: KS-03 frozen splits

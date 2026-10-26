@@ -12,8 +12,8 @@ half-day including verification; no calendar deadline or skill level is assumed.
 | ID | Priority / effort | Task and explicit deliverable | Dependencies | Status |
 |---|---|---|---|---|
 | KS-01 | P0 / 2 | Build inventory/provenance manifest schema and validator; lengths/cadence/gaps/duplicates/finite values; audit fixtures now and real assets when received | Observation schema, fixtures | IN_REVIEW |
-| KS-02 | P0 / 3 | Implement bounded causal FeatureExtractor: prior median/scale, expected delta, observed delta, optional past-only seasonal reference with explicit unavailable state | FeatureFrame Protocol; no final detector dependency | TODO |
-| KS-03 | P0 / 2 | Implement deterministic group/chronological split manifest tooling and boundary-purge validation; hashes and group constraints | Synthetic manifest for tests; use real inventory later | TODO |
+| KS-02 | P0 / 3 | Implement bounded causal FeatureExtractor: prior median/scale, expected delta, observed delta, optional past-only seasonal reference with explicit unavailable state | FeatureFrame Protocol; no final detector dependency | IN_REVIEW |
+| KS-03 | P0 / 2 | Implement deterministic group/chronological split manifest tooling and boundary-purge validation; hashes and group constraints | Synthetic manifest for tests; use real inventory later | IN_PROGRESS |
 | KS-04 | P0 / 2 | Adapt organizer starter files/labels to canonical input, with documented timezone/gap/column mapping and access provenance | Official assets and Q01/Q09 answers | BLOCKED |
 | KS-05 | P1 / 2 | Real dataset EDA and train-only periodicity/cadence analysis; provide figures/notes for slides 3/5 and EXP-01 | KS-04, permitted development labels | BLOCKED |
 | KS-06 | P1 / 2 | Stress feature/data behavior on missing spans, rescaling, contaminated warmup, flat/short series; report limitations | KS-02/03 | TODO |
@@ -97,3 +97,25 @@ subsequent owned work; shared CURRENT_STATE/TASK_BOARD/INTEGRATION remain Ayush'
 
 Optional stretch: contribute past-only reference-window tooling for EXP-09/S2 after P0 tasks;
 coordinate with Manas and document horizon/memory effects before adoption.
+
+### Phased continuation: KS-02, 2026-10-26 (Asia/Kolkata)
+
+- User authorized completing assigned work phase by phase with review/fixes after each phase.
+  Active aggregate branch: `feat/kaustubh/KS-01-02-03-06-data-workstream`. It retains KS-01's
+  original commits; INTEGRATION permits this explicitly listed tightly coupled task set.
+- KS-02 is implemented and verified, status IN_REVIEW pending Ayush/Manas consumer review.
+  Implementation commit `2b991a9b4b218ac74f447f0ff8b253d899cbef7a` is local, not published.
+- Added `src/sentinel/data/features.py`, `tests/data/test_features.py`, and
+  [feature semantics](../docs/DATA_FEATURES.md). Existing FeatureFrame/protocol/config remain intact.
+  Constructor parameters are proposed implementation settings; shared config integration still
+  requires Ayush/Manas review. No label input, period estimation, interpolation or detector changes.
+- Independent review found UTC-fold ordering and integer-overflow exception issues. Both were
+  reproduced with failing tests, fixed by normalizing instants/values before processing, and
+  rechecked by the reviewer: no remaining findings. Agent review is not teammate approval.
+- Actual final commands: feature suite 30 passed; full pytest 124 passed/1 skipped; Ruff check
+  and format check pass (18 files), strict mypy passes (14 source files), repository checker and
+  whitespace check pass. The existing symlink test skips for Windows privilege; only Python 3.12
+  Windows executed. Exact commands/limitations are in the
+  [KS-02 handoff](../docs/HANDOFFS/KS-02_kaustubh_20261026T155217Z_features.md).
+- Next software phase: KS-03 frozen splits; then KS-06 stress/integration. KS-04/05 remain blocked
+  by actual organizer assets and permissions. No official performance result has been produced.
