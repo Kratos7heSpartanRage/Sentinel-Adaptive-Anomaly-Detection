@@ -5,7 +5,7 @@
 - Original owner: Mayank
 - Status: DONE
 - Branch: feat/mayank/MY-01-event-cases
-- Implementation commit reference: (uncommitted local work on feat/mayank/MY-01-event-cases)
+- Implementation commit reference: 9335b87
 - Shared location: local-only (on branch feat/mayank/MY-01-event-cases; ready for local commit and review)
 - Objective: Expand event golden tests covering boundaries, repeated episodes, warmup, no-event series, gaps, interleaving, micro/macro aggregation, and state evaluation policy in reports.
 - Relevant files:
