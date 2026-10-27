@@ -5,7 +5,7 @@
 - Original owner: Mayank
 - Status: DONE
 - Branch: feat/mayank/MY-01-event-cases
-- Implementation commit reference: (uncommitted local work in frontend/web/)
+- Implementation commit reference: 60d9076
 - Shared location: local-only (in frontend/web/ on branch feat/mayank/MY-01-event-cases)
 - Objective: Build the demo and result-visualization frontend for "Sentinel Pulse" implementing the "Regal Watchtower" theme, 60fps parallax constellation wallpaper, causal streaming replay, interactive evidence drawer, event evaluation timeline strip, Level B roadmap, run manifest inspector, and client-side run upload.
 - Relevant files:
