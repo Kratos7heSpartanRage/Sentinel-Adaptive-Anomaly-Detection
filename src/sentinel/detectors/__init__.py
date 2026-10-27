@@ -1,1 +1,1 @@
-"""Manas owns detectors; only RollingMADStarter is currently implemented."""
+"""Manas owns the rolling MAD starter and rolling z-score comparator."""

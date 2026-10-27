@@ -11,7 +11,7 @@ half-day including tests/review; real elapsed effort depends on findings.
 
 | ID | Priority / effort | Task and explicit deliverable | Dependencies | Status |
 |---|---|---|---|---|
-| MN-01 | P0 / 2 | Add causal rolling mean/z baseline as an independent comparator; verify MAD starter against hand-derived data; document score orientation/floors | Existing Detector and synthetic fixtures | TODO |
+| MN-01 | P0 / 2 | Add causal rolling mean/z baseline as an independent comparator; verify MAD starter against hand-derived data; document score orientation/floors | Existing Detector and synthetic fixtures | IN_REVIEW |
 | MN-02 | P0 / 3 | Implement residual detector with level/delta and optional seasonal components, fixed documented combination, direct component evidence | FeatureFrame contract; fake extractor now, KS-02 integration later | TODO |
 | MN-03 | P0 / 2 | Implement bounded prior-score empirical quantile threshold with minimum-history fallback and causal calibration tests | Can start independent score-stream tests; integrate MN-02 later | TODO |
 | MN-04 | P1 / 3 | Compare no guard/capped influence/finite quarantine and shadow drift; implement only validated update policy | MN-02/03, sustained-shift/fault tests, permitted data | TODO |
@@ -59,3 +59,43 @@ No MN task is complete at initialization. The implemented MAD starter is not the
 ensemble, adaptive quantile system, or guarded drift policy. Record exact branch/commit, actual
 tests, assumptions, failures/blockers, and next action in this file and a unique handoff.
 Use [HANDOFF_PROTOCOL](../docs/HANDOFF_PROTOCOL.md); another machine cannot access local-only work.
+
+### MN-01 implementation and local verification — 2026-10-26 UTC
+
+Branch: `feat/manas/MN-01-zscore`, based on reviewed foundation `main` at `d7158d6`.
+Status: **IN_REVIEW** — implementation and local acceptance checks complete; peer/integration
+review and merge remain pending. Central integration summaries have not been changed.
+
+- Added `RollingZScoreDetector` in `src/sentinel/detectors/zscore.py`, using preceding-window
+  arithmetic mean and population standard deviation, a positive scale floor, absolute score,
+  inclusive threshold, numerical evidence, bounded history, UTC output, and reset/error recovery.
+- Added 48 owned cases in `tests/detectors/test_baselines.py`, including hand-derived odd/even/
+  contaminated-history MAD references. The MAD algorithm and shared interfaces are unchanged.
+- [Method notes](../src/sentinel/detectors/README.md) specify equations, score units, floors,
+  readiness, update policy, limitations, and the existing programmatic factory integration.
+- Actual commands with `.venv/Scripts/python.exe`: `-m pytest tests/test_foundation.py -q`
+  before implementation: **24 passed**; `-m pytest tests/detectors -q`: **48 passed**;
+  `-m pytest -q`: **72 passed**; `-m ruff check .`: passed; `-m ruff format --check .`:
+  **16 files formatted**; `-m mypy`: **13 source files passed**; repository checker: passed.
+  `git diff --check` passed. Exact commands and handoff reference follow in the task handoff.
+- README CLI replay/evaluation passed at `outputs/manas-MN-01-smoke-001` (local, ignored).
+  It still runs MAD: 16 synthetic points, one artificial event, provisional TP/FP/FN=1/0/0.
+  A separate owned integration test proves z predictions work with the shared reader, replay,
+  serializer, and provisional evaluator. Neither check is an official benchmark.
+- [Synthetic runtime diagnostic](../docs/validation/MN-01_manas_20261026T161915Z_runtime.json):
+  Python 3.13.5/Windows 11, one series/5,000 generated points, one trial, process-only timing
+  after a full-window warmup. At W=32 z p95=90.6 microseconds versus MAD=12.0; at W=128 z
+  p95=235.2 microseconds versus MAD=22.8. Standard-library stable statistics have higher
+  overhead here; no speedup, memory bound measurement, or detection-quality improvement is claimed.
+- Remaining integration: Ayush reviews optional CLI/config/factory selection and correct
+  algorithm metadata before any persisted run is described as a z run. No shared schema or
+  config extension was made. Ayush updates central records after integration; domain peers
+  review score semantics. Official data/scorer are unnecessary for MN-01 software acceptance
+  but still block genuine performance selection under MN-05.
+- Next actionable task: **MN-02**, using a deterministic `FeatureExtractor` double until KS-02
+  is available. MN-03 remains a separate causal prior-score calibration task.
+
+Implementation commit: `5e28d5c4b9fd6b6f4517f1b18d97088cf7b47a49`, pushed to
+`origin/feat/manas/MN-01-zscore`. See the [MN-01 handoff](../docs/HANDOFFS/MN-01_manas_20261026T162226Z_rolling-zscore.md)
+for exact commands, runtime reproduction, sharing state, reviewer obligations, and continuation.
+Draft review: [PR #1](https://github.com/Manas-Jain-24/sentinel-adaptive-anomaly-detection/pull/1).
