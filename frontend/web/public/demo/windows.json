@@ -4,8 +4,13 @@
   "windows": [
     {
       "series_id": "synthetic-demo",
-      "start": "2026-01-01T00:10:00Z",
-      "end": "2026-01-01T00:11:00Z"
+      "start": "2026-01-01T00:34:00Z",
+      "end": "2026-01-01T00:37:00Z"
+    },
+    {
+      "series_id": "synthetic-demo",
+      "start": "2026-01-01T01:14:00Z",
+      "end": "2026-01-01T01:18:00Z"
     }
   ]
 }
