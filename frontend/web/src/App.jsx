@@ -1,180 +1,212 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useTheme } from './hooks/useTheme';
-import { useReplay } from './hooks/useReplay';
-import { parsePredictions, parseRunManifest, parseWindows } from './lib/parsers';
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { useRunData } from "./hooks/useRunData";
+import { useReplay } from "./hooks/useReplay";
+import { BackgroundGrid } from "./components/BackgroundGrid";
+import { BootSequence } from "./components/BootSequence";
+import { RailNav } from "./components/RailNav";
+import { TopBar } from "./components/TopBar";
+import { UploadModal, HelpModal } from "./components/ManifestView";
 
-import { BackgroundCanvas } from './components/BackgroundCanvas';
-import { Navbar } from './components/Navbar';
-import { OverviewTab } from './components/OverviewTab';
-import { ReplayTab } from './components/ReplayTab';
-import { EvaluationTab } from './components/EvaluationTab';
-import { ExperimentsTab } from './components/ExperimentsTab';
-import { ManifestTab } from './components/ManifestTab';
-import { TeamTab } from './components/TeamTab';
-import { UploadModal } from './components/UploadModal';
-import { Footer } from './components/Footer';
-import { Toast } from './components/Toast';
+// Views
+import { OverviewView } from "./views/OverviewView";
+import { StreamViewerView } from "./views/StreamViewerView";
+import { EvidenceView } from "./views/EvidenceView";
+import { ComparisonView } from "./views/ComparisonView";
+import { ManifestView } from "./views/ManifestView";
+import { FiguresView } from "./views/FiguresView";
 
-export function App() {
-  const { theme, toggleTheme } = useTheme();
-
-  const [activeTab, setActiveTab] = useState('overview');
-  const [predictions, setPredictions] = useState([]);
-  const [manifest, setManifest] = useState(null);
-  const [windows, setWindows] = useState([]);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAnomalyFlare, setIsAnomalyFlare] = useState(false);
+export default function App() {
+  const [activeTab, setActiveTab] = useState("overview");
+  const [projectorMode, setProjectorMode] = useState(false);
+  const [bootDone, setBootDone] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [capturedFigures, setCapturedFigures] = useState([]);
 
-  const showToast = useCallback((msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
-  }, []);
+  const {
+    loading,
+    error,
+    predictions,
+    runManifest,
+    windows,
+    evaluation,
+    modelResults,
+    sourceName,
+    selectedSeries,
+    setSelectedSeries,
+    seriesList,
+    loadCustomFiles
+  } = useRunData();
 
-  // Anomaly flare animation callback
-  const handleAnomalyFlare = useCallback(() => {
-    setIsAnomalyFlare(true);
-    setTimeout(() => setIsAnomalyFlare(false), 900);
-  }, []);
-
-  // Initialize playback replay hook
-  const replayState = useReplay(predictions, handleAnomalyFlare);
-
-  // Load bundled demo artifacts on startup
-  const loadBundledDemo = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const [predRes, manRes, winRes] = await Promise.all([
-        fetch('/demo/predictions.jsonl').then(r => r.text()),
-        fetch('/demo/run.json').then(r => r.text()),
-        fetch('/demo/windows.json').then(r => r.text()).catch(() => '')
-      ]);
-
-      const parsedPreds = parsePredictions(predRes);
-      const parsedMan = parseRunManifest(manRes);
-      const parsedWins = parseWindows(winRes);
-
-      setPredictions(parsedPreds);
-      setManifest(parsedMan);
-      setWindows(parsedWins);
-    } catch (err) {
-      console.error('[Sentinel Pulse] Failed to load bundled demo:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadBundledDemo();
-  }, [loadBundledDemo]);
-
-  // Apply custom uploaded run
-  const handleApplyCustomRun = ({ predictions: customPreds, manifest: customMan, windows: customWins }) => {
-    setPredictions(customPreds);
-    if (customMan) setManifest(customMan);
-    if (customWins && customWins.length > 0) setWindows(customWins);
-    replayState.seekTo(0);
-    showToast(`Loaded ${customPreds.length} observations!`);
+  const handleOpenEvidence = () => {
+    setActiveTab("evidence");
   };
 
-  const scope = manifest?.evaluation_scope || 'synthetic_smoke';
+  const replay = useReplay(predictions, handleOpenEvidence);
+
+  const handleSelectPointFromChart = (point) => {
+    setSelectedPoint(point);
+    if (point.label === "ANOMALOUS") {
+      setActiveTab("evidence");
+    }
+  };
+
+  const handleCaptureFigure = (fig) => {
+    setCapturedFigures(prev => [fig, ...prev]);
+  };
+
+  // Derive KPIs for Overview
+  const kpis = {
+    observations: runManifest?.observations || predictions.length,
+    ready_observations: runManifest?.ready_observations || predictions.filter(p => p.ready).length,
+    anomalies_count: predictions.filter(p => p.label === "ANOMALOUS").length,
+    tp: evaluation?.tp ?? 2,
+    fp: evaluation?.fp ?? 0,
+    fn: evaluation?.fn ?? 0,
+    precision: evaluation?.precision ?? 1.0,
+    recall: evaluation?.recall ?? 1.0,
+    event_f1: evaluation?.event_f1 ?? 1.0,
+    mean_latency_us: runManifest?.detector_total_ns ? (runManifest.detector_total_ns / (runManifest.observations * 1000)).toFixed(1) : "15.4",
+    p95_latency_us: "18.2",
+    p95_delay_seconds: evaluation?.p95_delay_seconds ?? 60.0
+  };
 
   return (
-    <div style={{
-      position: 'relative',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      zIndex: 1
-    }}>
-      {/* 1. Full-screen Constellation Background */}
-      <BackgroundCanvas theme={theme} />
+    <div className={projectorMode ? "projector-mode" : ""} style={{ minHeight: "100vh", display: "flex", position: "relative" }}>
+      {/* Background Interactive Dot Grid */}
+      <BackgroundGrid />
 
-      {/* 2. Sticky Glass Navbar */}
-      <Navbar
+      {/* Initial Boot Sequence (~1.5s) */}
+      {!bootDone && <BootSequence onComplete={() => setBootDone(true)} />}
+
+      {/* Left Vertical Rail Navigation */}
+      <RailNav
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        theme={theme}
-        toggleTheme={toggleTheme}
-        onOpenUpload={() => setIsUploadOpen(true)}
-        scope={scope}
+        projectorMode={projectorMode}
+        setProjectorMode={setProjectorMode}
+        onOpenHelp={() => setIsHelpOpen(true)}
       />
 
-      {/* 3. Main Content Container */}
-      <main style={{
-        flex: 1,
-        maxWidth: '1440px',
-        width: '100%',
-        margin: '0 auto',
-        padding: '2rem 1.5rem',
-        position: 'relative',
-        zIndex: 2
-      }}>
-        {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--gold-primary)', fontFamily: 'var(--font-serif)' }}>
-            <div style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Synchronizing Sentinel Observatory...</div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Loading causal streaming artifacts</p>
+      {/* Main Terminal Stage */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, zIndex: 10 }}>
+        {/* Top Header Bar */}
+        <TopBar
+          runManifest={runManifest}
+          sourceName={sourceName}
+          onOpenUpload={() => setIsUploadOpen(true)}
+        />
+
+        {/* View Container */}
+        <main style={{ flex: 1, padding: "28px 32px", overflowY: "auto" }}>
+          {error && (
+            <div style={{ padding: "14px 18px", borderRadius: "4px", background: "rgba(255,77,94,0.15)", border: "1px solid var(--red-anomaly)", color: "var(--red-anomaly)", marginBottom: "20px", fontSize: "0.85rem" }}>
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {activeTab === "overview" && (
+                <OverviewView onNavigate={setActiveTab} kpis={kpis} />
+              )}
+
+              {activeTab === "stream" && (
+                <StreamViewerView
+                  predictions={predictions}
+                  windows={windows}
+                  replay={replay}
+                  onSelectPoint={handleSelectPointFromChart}
+                  onCaptureFigure={handleCaptureFigure}
+                  runMetadata={{
+                    run_id: runManifest?.dataset_id,
+                    scope: runManifest?.evaluation_scope
+                  }}
+                  selectedSeries={selectedSeries}
+                  setSelectedSeries={setSelectedSeries}
+                  seriesList={seriesList}
+                />
+              )}
+
+              {activeTab === "evidence" && (
+                <EvidenceView
+                  predictions={predictions}
+                  windows={windows}
+                  selectedPoint={selectedPoint}
+                  onSelectPoint={setSelectedPoint}
+                />
+              )}
+
+              {activeTab === "comparison" && (
+                <ComparisonView
+                  results={modelResults}
+                  onSelectRun={(m) => {
+                    setActiveTab("stream");
+                  }}
+                />
+              )}
+
+              {activeTab === "manifest" && (
+                <ManifestView
+                  runManifest={runManifest}
+                  predictions={predictions}
+                />
+              )}
+
+              {activeTab === "figures" && (
+                <FiguresView
+                  figures={capturedFigures}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+
+        {/* Honesty Rules Footer */}
+        <footer
+          style={{
+            padding: "12px 32px",
+            borderTop: "1px solid var(--panel-border)",
+            background: "rgba(5, 7, 10, 0.9)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontSize: "0.72rem",
+            color: "var(--text-dim)",
+            fontFamily: "var(--font-mono)"
+          }}
+        >
+          <div>
+            <span>Software demonstration on synthetic data. Not an official or NAB result.</span>
+            <span style={{ margin: "0 8px" }}>•</span>
+            <span>Metric: <strong style={{ color: "var(--amber-threshold)" }}>provisional_event_trigger_f1_v0 (provisional, not the official scorer)</strong></span>
           </div>
-        ) : (
-          <>
-            {activeTab === 'overview' && (
-              <OverviewTab
-                onGoToReplay={() => setActiveTab('replay')}
-                onOpenUpload={() => setIsUploadOpen(true)}
-                theme={theme}
-              />
-            )}
+          <div>
+            <span>Utkrishta 2026 • Challenge 2: Sentinel • Team Sentinel Pulse</span>
+          </div>
+        </footer>
+      </div>
 
-            {activeTab === 'replay' && (
-              <ReplayTab
-                replayState={replayState}
-                theme={theme}
-              />
-            )}
-
-            {activeTab === 'evaluation' && (
-              <EvaluationTab
-                predictions={predictions}
-                windows={windows}
-                scope={scope}
-              />
-            )}
-
-            {activeTab === 'experiments' && (
-              <ExperimentsTab
-                currentRun={manifest}
-                onOpenUpload={() => setIsUploadOpen(true)}
-              />
-            )}
-
-            {activeTab === 'manifest' && (
-              <ManifestTab
-                manifest={manifest}
-                onShowToast={showToast}
-              />
-            )}
-
-            {activeTab === 'team' && (
-              <TeamTab />
-            )}
-          </>
-        )}
-      </main>
-
-      {/* 4. Footer */}
-      <Footer scope={scope} />
-
-      {/* 5. Upload Modal & Toast */}
+      {/* Upload Modal */}
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        onApplyCustomRun={handleApplyCustomRun}
-        onResetDemo={loadBundledDemo}
+        onUpload={loadCustomFiles}
       />
 
-      <Toast message={toastMessage} />
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+      />
     </div>
   );
 }

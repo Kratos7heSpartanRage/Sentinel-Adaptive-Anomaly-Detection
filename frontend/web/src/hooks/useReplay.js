@@ -1,137 +1,109 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
-export function useReplay(predictions = [], onAnomalyFlare = null) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export function useReplay(predictions = [], onOpenEvidence) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1.0);
-  const [selectedSeries, setSelectedSeries] = useState('all');
+  const [speed, setSpeed] = useState(1); // 0.5x, 1x, 2x, 4x, 8x, 16x
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [causalMode, setCausalMode] = useState(true);
+  const animationRef = useRef(null);
+  const lastTickRef = useRef(performance.now());
 
-  const timerRef = useRef(null);
+  const totalPoints = predictions.length;
 
-  // Extract all available series IDs
-  const availableSeries = Array.from(new Set(predictions.map(p => p.series_id)));
+  const anomalies = predictions.filter(p => p.label === "ANOMALOUS");
 
-  // Filtered predictions by selected series
-  const filteredPredictions = selectedSeries === 'all'
-    ? predictions
-    : predictions.filter(p => p.series_id === selectedSeries);
-
-  const totalPoints = filteredPredictions.length;
-
-  const currentPoint = totalPoints > 0 && currentIndex < totalPoints
-    ? filteredPredictions[currentIndex]
-    : null;
-
-  // History up to current point (strictly causal!)
-  const causalHistory = filteredPredictions.slice(0, currentIndex + 1);
-
-  const seekTo = useCallback((index) => {
-    if (totalPoints === 0) return;
-    const clamped = Math.max(0, Math.min(index, totalPoints - 1));
-    setCurrentIndex(clamped);
-
-    // If seeking to an anomaly, trigger flare
-    if (onAnomalyFlare && filteredPredictions[clamped]?.label === 'ANOMALOUS') {
-      onAnomalyFlare(filteredPredictions[clamped]);
-    }
-  }, [totalPoints, filteredPredictions, onAnomalyFlare]);
-
+  // Step forward
   const stepForward = useCallback(() => {
-    if (totalPoints === 0) return;
-    setCurrentIndex(prev => {
-      const next = Math.min(prev + 1, totalPoints - 1);
-      if (onAnomalyFlare && filteredPredictions[next]?.label === 'ANOMALOUS') {
-        onAnomalyFlare(filteredPredictions[next]);
-      }
-      return next;
-    });
-  }, [totalPoints, filteredPredictions, onAnomalyFlare]);
+    setCurrentIndex(prev => Math.min(prev + 1, totalPoints - 1));
+  }, [totalPoints]);
 
+  // Step backward
   const stepBackward = useCallback(() => {
     setCurrentIndex(prev => Math.max(prev - 1, 0));
   }, []);
 
-  const togglePlay = useCallback(() => {
-    setIsPlaying(prev => {
-      // If at end, loop to start
-      if (!prev && currentIndex >= totalPoints - 1) {
-        setCurrentIndex(0);
-      }
-      return !prev;
-    });
-  }, [currentIndex, totalPoints]);
-
-  const play = useCallback(() => setIsPlaying(true), []);
-  const pause = useCallback(() => setIsPlaying(false), []);
-
-  // Interval-driven playback
-  useEffect(() => {
-    if (!isPlaying) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
+  // Jump to anomaly
+  const jumpToAnomaly = useCallback((direction = "next") => {
+    if (anomalies.length === 0) return;
+    if (direction === "next") {
+      const next = anomalies.find(a => a.index > currentIndex);
+      if (next) setCurrentIndex(next.index);
+      else setCurrentIndex(anomalies[0].index);
+    } else {
+      const prev = [...anomalies].reverse().find(a => a.index < currentIndex);
+      if (prev) setCurrentIndex(prev.index);
+      else setCurrentIndex(anomalies[anomalies.length - 1].index);
     }
+  }, [anomalies, currentIndex]);
 
-    const intervalMs = Math.max(80, Math.round(900 / speed));
+  // Play loop
+  useEffect(() => {
+    if (!isPlaying || totalPoints === 0) return;
 
-    timerRef.current = setInterval(() => {
-      setCurrentIndex(prev => {
-        if (prev >= totalPoints - 1) {
-          setIsPlaying(false);
-          return prev;
-        }
-        const next = prev + 1;
-        if (onAnomalyFlare && filteredPredictions[next]?.label === 'ANOMALOUS') {
-          onAnomalyFlare(filteredPredictions[next]);
-        }
-        return next;
-      });
-    }, intervalMs);
+    const intervalMs = Math.max(16, 250 / speed);
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+    const loop = (time) => {
+      if (time - lastTickRef.current >= intervalMs) {
+        lastTickRef.current = time;
+        setCurrentIndex(prev => {
+          if (prev >= totalPoints - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }
+      animationRef.current = requestAnimationFrame(loop);
     };
-  }, [isPlaying, speed, totalPoints, filteredPredictions, onAnomalyFlare]);
 
-  // Keyboard controls (Space to play/pause, Left/Right arrows to step)
+    animationRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animationRef.current);
+  }, [isPlaying, speed, totalPoints]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Ignore if user is typing in an input
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
-        return;
-      }
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
 
-      if (e.code === 'Space') {
+      if (e.code === "Space") {
         e.preventDefault();
-        togglePlay();
-      } else if (e.code === 'ArrowRight') {
+        setIsPlaying(p => !p);
+      } else if (e.code === "ArrowRight") {
         e.preventDefault();
         stepForward();
-      } else if (e.code === 'ArrowLeft') {
+      } else if (e.code === "ArrowLeft") {
         e.preventDefault();
         stepBackward();
+      } else if (e.key === "[") {
+        e.preventDefault();
+        jumpToAnomaly("prev");
+      } else if (e.key === "]") {
+        e.preventDefault();
+        jumpToAnomaly("next");
+      } else if (e.key === "e" || e.key === "E") {
+        e.preventDefault();
+        if (onOpenEvidence) onOpenEvidence();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlay, stepForward, stepBackward]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [stepForward, stepBackward, jumpToAnomaly, onOpenEvidence]);
 
   return {
-    currentIndex,
-    totalPoints,
-    currentPoint,
-    causalHistory,
     isPlaying,
+    setIsPlaying,
     speed,
-    selectedSeries,
-    availableSeries,
-    seekTo,
+    setSpeed,
+    currentIndex,
+    setCurrentIndex,
+    causalMode,
+    setCausalMode,
     stepForward,
     stepBackward,
-    togglePlay,
-    play,
-    pause,
-    setSpeed,
-    setSelectedSeries
+    jumpToAnomaly,
+    totalPoints,
+    currentPoint: predictions[currentIndex] || null
   };
 }

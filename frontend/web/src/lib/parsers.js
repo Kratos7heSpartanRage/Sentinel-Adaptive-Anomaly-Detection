@@ -1,100 +1,151 @@
 /**
- * Strict parsers for Sentinel Pulse artifacts with graceful degradation.
+ * Shared parsers for Sentinel Pulse contracts.
+ * Degrades gracefully if non-critical fields are absent; never invents data.
  */
 
-export function parsePredictions(jsonlText) {
-  if (!jsonlText || typeof jsonlText !== 'string') {
-    return [];
-  }
-
-  const lines = jsonlText.split(/\r?\n/).filter(line => line.trim().length > 0);
+export function parsePredictionsJsonl(text) {
+  if (!text || typeof text !== "string") return [];
+  const lines = text.trim().split(/\r?\n/);
   const records = [];
 
   for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
     try {
-      const parsed = JSON.parse(lines[i]);
-      if (!parsed.series_id || !parsed.timestamp) {
-        continue;
-      }
-
+      const obj = JSON.parse(line);
       records.push({
-        index: i,
-        series_id: String(parsed.series_id),
-        timestamp: parsed.timestamp,
-        value: typeof parsed.value === 'number' ? parsed.value : 0,
-        score: typeof parsed.score === 'number' ? parsed.score : null,
-        threshold: typeof parsed.threshold === 'number' ? parsed.threshold : 4.0,
-        label: parsed.label === 'ANOMALOUS' ? 'ANOMALOUS' : 'NORMAL',
-        ready: Boolean(parsed.ready),
-        elapsed_ns: typeof parsed.elapsed_ns === 'number' ? parsed.elapsed_ns : 0,
-        schema_version: parsed.schema_version || '1.0',
-        evidence: {
-          baseline: parsed.evidence && typeof parsed.evidence.baseline === 'number' ? parsed.evidence.baseline : null,
-          scale: parsed.evidence && typeof parsed.evidence.scale === 'number' ? parsed.evidence.scale : null,
-          residual: parsed.evidence && typeof parsed.evidence.residual === 'number' ? parsed.evidence.residual : null,
-          history_size: parsed.evidence && typeof parsed.evidence.history_size === 'number' ? parsed.evidence.history_size : 0,
-          reason: (parsed.evidence && parsed.evidence.reason) || (parsed.ready ? 'score_evaluated' : 'warmup'),
-          component_scores: (parsed.evidence && parsed.evidence.component_scores) || {}
-        }
+        series_id: obj.series_id || "default",
+        timestamp: obj.timestamp,
+        value: typeof obj.value === "number" ? obj.value : 0,
+        score: typeof obj.score === "number" ? obj.score : null,
+        threshold: typeof obj.threshold === "number" ? obj.threshold : 4.0,
+        label: obj.label === "ANOMALOUS" ? "ANOMALOUS" : "NORMAL",
+        ready: Boolean(obj.ready),
+        evidence: obj.evidence || {
+          baseline: null,
+          scale: null,
+          residual: null,
+          history_size: 0,
+          reason: "unknown",
+          component_scores: {}
+        },
+        elapsed_ns: typeof obj.elapsed_ns === "number" ? obj.elapsed_ns : 0,
+        schema_version: obj.schema_version || "1.0",
+        index: i
       });
-    } catch (err) {
-      console.warn(`[Sentinel Parser] Skipping malformed line ${i + 1}:`, err);
+    } catch (e) {
+      console.warn(`Skipping invalid JSON line ${i}:`, e);
     }
   }
-
   return records;
 }
 
-export function parseRunManifest(jsonText) {
-  if (!jsonText) return null;
+export function parseRunJson(text) {
+  if (!text) return null;
   try {
-    const raw = typeof jsonText === 'string' ? JSON.parse(jsonText) : jsonText;
+    const obj = typeof text === "string" ? JSON.parse(text) : text;
     return {
-      schema_version: raw.schema_version || '1.0',
-      package_version: raw.package_version || '0.1.0',
-      algorithm: raw.algorithm || 'rolling_mad_starter',
-      evaluation_scope: raw.evaluation_scope || 'synthetic_smoke',
-      dataset_id: raw.dataset_id || 'unknown-dataset',
-      input_sha256: raw.input_sha256 || 'unknown',
-      predictions_sha256: raw.predictions_sha256 || 'unknown',
-      config: raw.config || {
-        window_size: 32,
-        min_history: 8,
-        threshold: 4.0,
-        scale_floor: 0.1,
-        max_series: 100
-      },
-      python: raw.python || '3.12+',
-      platform: raw.platform || 'unknown-platform',
-      observations: raw.observations || 0,
-      ready_observations: raw.ready_observations || 0,
-      anomalous_points: raw.anomalous_points || 0,
-      detector_total_ns: raw.detector_total_ns || 0,
-      runtime_note: raw.runtime_note || '',
-      official_submission_ready: Boolean(raw.official_submission_ready)
+      schema_version: obj.schema_version || "1.0",
+      package_version: obj.package_version || "0.1.0",
+      algorithm: obj.algorithm || "unknown",
+      evaluation_scope: obj.evaluation_scope || "synthetic_smoke",
+      dataset_id: obj.dataset_id || "unknown",
+      input_sha256: obj.input_sha256 || "",
+      predictions_sha256: obj.predictions_sha256 || "",
+      config: obj.config || {},
+      python: obj.python || "N/A",
+      platform: obj.platform || "N/A",
+      observations: obj.observations || 0,
+      ready_observations: obj.ready_observations || 0,
+      anomalous_points: obj.anomalous_points || 0,
+      detector_total_ns: obj.detector_total_ns || 0,
+      runtime_note: obj.runtime_note || "",
+      official_submission_ready: Boolean(obj.official_submission_ready)
     };
-  } catch (err) {
-    console.error('[Sentinel Parser] Failed to parse run.json:', err);
+  } catch (e) {
+    console.error("Failed to parse run.json:", e);
     return null;
   }
 }
 
-export function parseWindows(jsonText) {
-  if (!jsonText) return [];
+export function parseWindowsJson(text) {
+  if (!text) return [];
   try {
-    const raw = typeof jsonText === 'string' ? JSON.parse(jsonText) : jsonText;
-    const windowList = Array.isArray(raw) ? raw : (raw.windows || []);
-    return windowList
-      .filter(w => w && w.series_id && w.start && w.end)
-      .map(w => ({
-        series_id: String(w.series_id),
-        start: w.start,
-        end: w.end,
-        startTime: new Date(w.start).getTime(),
-        endTime: new Date(w.end).getTime()
-      }));
-  } catch (err) {
-    console.error('[Sentinel Parser] Failed to parse windows JSON:', err);
+    const obj = typeof text === "string" ? JSON.parse(text) : text;
+    const list = Array.isArray(obj) ? obj : (obj.windows || []);
+    return list.map(w => ({
+      series_id: w.series_id || "all",
+      start: w.start,
+      end: w.end,
+      start_ms: new Date(w.start).getTime(),
+      end_ms: new Date(w.end).getTime()
+    })).filter(w => !isNaN(w.start_ms) && !isNaN(w.end_ms));
+  } catch (e) {
+    console.error("Failed to parse windows JSON:", e);
     return [];
   }
+}
+
+export function parseEvaluationJson(text) {
+  if (!text) return null;
+  try {
+    const obj = typeof text === "string" ? JSON.parse(text) : text;
+    return {
+      metric_id: obj.metric_id || "provisional_event_trigger_f1_v0",
+      official_metric: Boolean(obj.official_metric),
+      tp: obj.tp ?? 0,
+      fp: obj.fp ?? 0,
+      fn: obj.fn ?? 0,
+      precision: obj.precision ?? 0,
+      recall: obj.recall ?? 0,
+      event_f1: obj.event_f1 ?? 0,
+      delay_seconds: obj.delay_seconds || [],
+      mean_delay_seconds: obj.mean_delay_seconds ?? null,
+      median_delay_seconds: obj.median_delay_seconds ?? null,
+      p95_delay_seconds: obj.p95_delay_seconds ?? null,
+      min_delay_seconds: obj.min_delay_seconds ?? null,
+      max_delay_seconds: obj.max_delay_seconds ?? null,
+      missed_events: obj.missed_events ?? 0,
+      per_series: obj.per_series || {},
+      policy: obj.policy || {}
+    };
+  } catch (e) {
+    console.error("Failed to parse evaluation JSON:", e);
+    return null;
+  }
+}
+
+export function parseResults(text) {
+  if (!text) return [];
+  const lines = text.trim().split(/\r?\n/);
+  const results = [];
+  
+  // Try JSONL first
+  let isJson = true;
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    try {
+      const obj = JSON.parse(line);
+      results.push(obj);
+    } catch {
+      isJson = false;
+      break;
+    }
+  }
+  if (isJson && results.length > 0) return results;
+
+  // Otherwise parse CSV
+  const header = lines[0].split(",").map(c => c.trim().toLowerCase());
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i].split(",").map(c => c.trim());
+    if (row.length !== header.length) continue;
+    const item = {};
+    header.forEach((h, idx) => {
+      const val = row[idx];
+      const num = Number(val);
+      item[h] = isNaN(num) ? val : num;
+    });
+    results.push(item);
+  }
+  return results;
 }
